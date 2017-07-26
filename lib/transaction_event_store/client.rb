@@ -1,7 +1,7 @@
 require 'ruby_event_store'
 
 module TransactionEventStore
-  class Client < RubyEventStore
+  class Client < RubyEventStore::Client
     def with_lock(stream, &block)
       repository.with_lock(stream, &block)
     end
