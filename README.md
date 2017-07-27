@@ -1,41 +1,31 @@
 # TransactionEventStore
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/transaction_event_store`. To experiment with that code, run `bin/console` for an interactive prompt.
+An extension of https://github.com/arkency/ruby_event_store with support for pessimistic locking and snapshots.
 
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'transaction_event_store'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install transaction_event_store
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/transaction_event_store.
+### Implementations
 
 
-## License
+* [Mongoid](https://github.com/gingerhendrix/transaction_event_store_mongoid)
+* Active Record coming soon
 
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+### See Also
 
+[Snapshot Aggregate Root](https://github.com/gingerhendrix/snapshot_aggregate_root) an "Aggregate Root" implementation using this event store.
+
+## API
+
+Same as RubyEventStore::Client except the following additions
+
+### Snapshots
+
+* `publish_snapshot` - delegates to `repository#create_snapshot`
+* `last_stream_snapshot` - delegates to `repository#last_stream_snapshot`
+
+### Concurrent writers
+
+* `with_lock` method added, which delegates to `repository#with_lock`
+* `notify_susbsribers` method added, which exposes the exising `event_broker#notify_subscribers` function (this is used `with_write_context` to ensure event handlers aren't called until after the events are committed)
+
+### Unlimited queries
+
+* Event store reader methods (`read_events_forward` etc), that accept a `count: ` parameter can be passed `count: nil` to disable limits
